@@ -29,16 +29,25 @@ type lineOneTLE struct {
 }
 
 type lineTwoTLE struct {
-	lineNumber           string
-	satelliteNumber      string
-	inclination          string
-	rightAscensionOfNode string
-	eccentricity         string
-	argumentOfPerigee    string
-	meanAnomoly          string
-	meanMotion           string
-	revolutionNumAtEpoch string
-	checksum             string
+	lineNumber                     string
+	satelliteNumber                string
+	inclination                    string
+	rightAscensionsOfAscendingNode string
+	eccentricity                   string
+	argumentOfPerigee              string
+	meanAnomoly                    string
+	meanMotion                     string
+	revolutionNumAtEpoch           string
+	checksum                       string
+}
+
+type KeplarianElements struct {
+	inclination       string
+	RAAN              string
+	eccentricity      string
+	argumentOfPerigee string
+	meanAnomoly       string
+	meanMotion        string
 }
 
 func fmtLineOneTLE(sat newSatellite) lineOneTLE {
@@ -70,29 +79,41 @@ func fmtLineTwoTLE(sat newSatellite) lineTwoTLE {
 	lineTwoArr := strings.Split(sat.line2, "")
 
 	tle := lineTwoTLE{
-		lineNumber:           "\nLine Number: " + strings.Join(lineTwoArr[0:1], ""),
-		satelliteNumber:      "\nSatellite Number: " + strings.Join(lineTwoArr[3:7], ""),
-		inclination:          "\nInclination [Degrees]: " + strings.Join(lineTwoArr[9:16], ""),
-		rightAscensionOfNode: "\nRight Ascension of the Ascending Node [Degrees]: " + strings.Join(lineTwoArr[18:25], ""),
-		eccentricity:         "\nEccentricity (Leading decimal point assumed): " + strings.Join(lineTwoArr[27:33], ""),
-		argumentOfPerigee:    "\nArgument of Perigee [Degrees]: " + strings.Join(lineTwoArr[35:42], ""),
-		meanAnomoly:          "\nMean Anomaly [Degrees]: " + strings.Join(lineTwoArr[44:51], ""),
-		meanMotion:           "\nMean Motion [Revs per day]: " + strings.Join(lineTwoArr[53:63], ""),
-		revolutionNumAtEpoch: "\nRevolution number at epoch [Revs]: " + strings.Join(lineTwoArr[64:68], ""),
-		checksum:             "\nChecksum: " + strings.Join(lineTwoArr[68:69], ""),
+		lineNumber:                     "\nLine Number: " + strings.Join(lineTwoArr[0:1], ""),
+		satelliteNumber:                "\nSatellite Number: " + strings.Join(lineTwoArr[3:7], ""),
+		inclination:                    "\nInclination [Degrees]: " + strings.Join(lineTwoArr[9:16], ""),
+		rightAscensionsOfAscendingNode: "\nRight Ascension of the Ascending Node [Degrees]: " + strings.Join(lineTwoArr[18:25], ""),
+		eccentricity:                   "\nEccentricity (Leading decimal point assumed): " + strings.Join(lineTwoArr[27:33], ""),
+		argumentOfPerigee:              "\nArgument of Perigee [Degrees]: " + strings.Join(lineTwoArr[35:42], ""),
+		meanAnomoly:                    "\nMean Anomaly [Degrees]: " + strings.Join(lineTwoArr[44:51], ""),
+		meanMotion:                     "\nMean Motion [Revs per day]: " + strings.Join(lineTwoArr[53:63], ""),
+		revolutionNumAtEpoch:           "\nRevolution number at epoch [Revs]: " + strings.Join(lineTwoArr[64:68], ""),
+		checksum:                       "\nChecksum: " + strings.Join(lineTwoArr[68:69], ""),
 	}
-
 	return tle
 }
 
+func getKeplearians(l2 lineTwoTLE) KeplarianElements {
+	kepEls := KeplarianElements{
+		inclination:       l2.inclination,
+		RAAN:              l2.rightAscensionsOfAscendingNode,
+		eccentricity:      l2.eccentricity,
+		argumentOfPerigee: l2.argumentOfPerigee,
+		meanAnomoly:       l2.meanAnomoly,
+		meanMotion:        l2.meanMotion,
+	}
+
+	return kepEls
+}
+
 func printSatData(sat newSatellite) {
-	fmt.Printf("TLE Data: %v\nLine One: %v\nLine Two: %v", sat.name, fmtLineOneTLE(sat), fmtLineTwoTLE(sat))
+	fmt.Printf("TLE Data:\n%v\nLine One:\n%v\nLine Two:\n%v\nKeplarians:\n%v", sat.name, fmtLineOneTLE(sat), fmtLineTwoTLE(sat), getKeplearians(fmtLineTwoTLE(sat)))
 }
 
 func main() {
 
 	satelliteISS := newSatellite{
-		name:  "ISS",
+		name:  "ISS (ZARYA)",
 		line1: "1 25544U 98067A   20358.54791667  .00016717  00000-0  10270-3 0  9002",
 		line2: "2 25544  51.6432  21.5264 0002184  90.4728 285.4598 15.49212921247662",
 	}
